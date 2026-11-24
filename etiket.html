@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<title>Ürün listesi ve QR etiket yazdırma</title>
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="logo">🏷️</div>
+  <div class="brand"><b>Etiket üreticisi</b><small>ürün listesi + QR etiket</small></div>
+  <div class="cap-mini"><a class="btn sm" href="index.html">📷 Taramaya dön</a></div>
+</header>
+
+<main>
+
+  <div class="card no-print">
+    <h3>Ürün bilgisi <span class="hint">yıldızlılar QR’da da bulunmalı</span></h3>
+    <div class="grid2">
+      <label class="f"><span>Ürün kodu *</span><input type="text" id="pKod" placeholder="URN-1042"></label>
+      <label class="f"><span>Kategori</span><select id="pKategori"></select></label>
+    </div>
+    <label class="f"><span>Ürün adı *</span><input type="text" id="pAd" placeholder="Çamaşır makinesi 8 kg"></label>
+    <div class="grid2">
+      <label class="f"><span>Ağırlık (kg) *</span><input type="text" inputmode="decimal" id="pKg" placeholder="ör. 45,5"></label>
+      <label class="f"><span>Hacim (m³)</span><input type="text" inputmode="decimal" id="pM3" placeholder="ör. 0,65"><small class="muted">Boş bırakırsanız ölçülerden hesaplanır</small></label>
+    </div>
+    <div class="grid3">
+      <label class="f"><span>En (cm)</span><input type="text" inputmode="decimal" id="pEn"></label>
+      <label class="f"><span>Boy (cm)</span><input type="text" inputmode="decimal" id="pBoy"></label>
+      <label class="f"><span>Yükseklik (cm)</span><input type="text" inputmode="decimal" id="pYuk"></label>
+    </div>
+    <div class="row gap mb12">
+      <div class="grow"><span style="font-size:12.5px;color:var(--muted);font-weight:600">Kırılacak mı?</span>
+        <div class="tri mt8" id="pKirilgan"><button type="button" data-v="1">EVET ⚠</button><button type="button" data-v="0">HAYIR</button><button type="button" data-v="">Bilinmiyor</button></div>
+      </div>
+      <div class="grow"><span style="font-size:12.5px;color:var(--muted);font-weight:600">Üstüne istiflenir mi?</span>
+        <div class="tri mt8" id="pIstifle"><button type="button" data-v="1">EVET</button><button type="button" data-v="0">HAYIR</button><button type="button" data-v="">Bilinmiyor</button></div>
+      </div>
+    </div>
+    <label class="f"><span>Varsayılan varış noktası</span><input type="text" id="pVaris" list="vars" placeholder="İstanbul / Kadıköy"></label>
+    <datalist id="vars"></datalist>
+    <div class="grid2">
+      <label class="f"><span>Müşteri / alıcı</span><input type="text" id="pMusteri"></label>
+      <label class="f"><span>Telefon</span><input type="tel" id="pTelefon" inputmode="tel" maxlength="14" placeholder="0532 111 22 33"><small class="muted">0 + 10 hane — 12. hane yazılamaz</small></label>
+    </div>
+    <label class="f"><span>Not</span><input type="text" id="pNot" placeholder="Dik taşı, 2 kişi, asma…"></label>
+
+    <div class="row gap mt12">
+      <button class="btn primary grow" id="btnSave" type="button">💾 Listeye kaydet</button>
+      <button class="btn" id="btnNew" type="button">＋ Yeni ürün</button>
+      <button class="btn ghost" id="btnPng" type="button">🖼️ QR PNG</button>
+    </div>
+  </div>
+
+  <div class="card no-print center">
+    <h3>Önizleme <span class="hint">bu QR’ı okutan telefon tüm bilgileri görür</span></h3>
+    <div class="qr-box" id="qrPreview"></div>
+    <details class="mt8"><summary class="muted">QR içeriği</summary>
+      <pre class="mono" id="qrText" style="white-space:pre-wrap;word-break:break-all;color:var(--muted);text-align:left"></pre>
+    </details>
+  </div>
+
+  <div class="card no-print">
+    <h3>Ürün listesi <span class="hint" id="catSayac">0 kayıt</span></h3>
+    <input type="search" id="ara" placeholder="Ara: kod, ad, varış noktası…">
+    <div class="row mt8">
+      <label class="switch" style="padding:0"><input type="checkbox" id="selAll"><span style="font-size:13px">Seçili etiketler</span></label>
+      <span class="grow"></span>
+      <label class="f" style="margin:0;max-width:110px"><span>Kopya/adet</span><input type="number" inputmode="numeric" id="kopya" value="1" min="1" max="50"></label>
+    </div>
+    <div class="btn-grid mt12">
+      <button class="btn primary" id="btnPrint" type="button">🖨️ Etiketleri hazırla / yazdır</button>
+      <button class="btn" id="btnImpCsv" type="button">📥 CSV içe aktar</button>
+      <button class="btn" id="btnImpJson" type="button">📥 JSON içe aktar</button>
+      <button class="btn" id="btnExpCsv" type="button">⬆️ CSV dışa aktar</button>
+      <button class="btn" id="btnExpJson" type="button">⬆️ JSON dışa aktar</button>
+      <button class="btn" id="btnSyncFile" type="button" title="Telefondan tek dokunuşla çekilebilir: indir, uygulamayı baratan klasöre (veya telefona at) koy">⬇️ urunler.json (PC→telefon)</button>
+      <button class="btn ghost" id="btnTemplate" type="button">📄 CSV şablonu</button>
+    </div>
+    <input type="file" id="fCsv" accept=".csv,text/csv" class="hidden">
+    <input type="file" id="fJson" accept=".json,application/json" class="hidden">
+    <div class="scroll-x mt12"><table class="tbl" id="tablo"></table></div>
+  </div>
+
+  <div class="card no-print" id="printBilgi" style="display:none">
+    <h3>Yazdırmaya hazır</h3>
+    <p class="muted" id="printOzet"></p>
+    <button class="btn primary" id="btnPrintNow" type="button">🖨️ Yazdır</button>
+  </div>
+
+  <div class="card">
+    <div class="label-sheet" id="printArea"></div>
+  </div>
+
+</main>
+
+<script src="vendor/qrcode-generator.js"></script>
+<script src="js/qrmake.js?v=13"></script>
+<script src="js/storage.js?v=13"></script>
+<script src="js/products.js?v=13"></script>
+<script src="js/validate.js?v=13"></script>
+<script src="js/labels.js?v=13"></script>
+<script>
+/* Self-heal (etiket ekranı) — bkz. index.html bekçisi */
+(function () {
+  function versiyon() {
+    var s = document.querySelector('script[src*="products.js"]');
+    return s && s.src.indexOf('v=') > -1 ? s.src.split('v=')[1] : '0';
+  }
+  var kritik = ['pKategori', 'pKod', 'pAd'];
+  var sorun = !window.Products || !window.DB ||
+    kritik.some(function (id) { return !document.getElementById(id); });
+  if (!sorun) return;
+  var ana = 'selfheal-' + versiyon();
+  try { if (sessionStorage.getItem(ana)) return; sessionStorage.setItem(ana, '1'); } catch (e) {}
+  var bos = Promise.resolve();
+  if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+    bos = navigator.serviceWorker.getRegistrations().then(function (rs) {
+      return Promise.all(rs.map(function (r) { return r.unregister(); }));
+    }).catch(function () {});
+  }
+  bos.then(function () { return caches.keys(); })
+     .then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); })
+     .catch(function () {})
+     .then(function () { location.reload(); });
+})();
+</script>
+</body>
+</html>

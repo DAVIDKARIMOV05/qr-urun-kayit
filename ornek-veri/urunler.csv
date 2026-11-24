@@ -1,0 +1,15 @@
+kod;ad;kategori;agirlikKg;hacimM3;en_cm;boy_cm;yukseklik_cm;kirilgan;istiflenebilir;varisNoktasi;musteri;telefon;not
+URN-1001;Çamaşır makinesi 8 kg;Beyaz eşya;68;0.31;60;60;85;HAYIR;EVET;İstanbul / Kadıköy;Ayşe Yılmaz;0532 111 22 33;Tahliye hortumu arkada
+URN-1002;Bulaşık makinesi 12 program;Beyaz eşya;52;0.28;60;60;84;HAYIR;EVET;İstanbul / Kadıköy;Ayşe Yılmaz;0532 111 22 33;
+URN-1003;Buzdolabı no-frost 480 lt;Beyaz eşya;96;0.85;70;74;186;HAYIR;HAYIR;İstanbul / Kadıköy;Ayşe Yılmaz;0532 111 22 33;Dik taşınacak
+URN-1004;Çamaşır dolabı 3 kapaklı;Mobilya;92;1.24;60;200;92;HAYIR;HAYIR;İstanbul / Kadıköy;Ayşe Yılmaz;0532 111 22 33;2 koli demonte
+URN-2001;Cam yemek masası 120x80;Mobilya;45;0.65;120;80;75;EVET;HAYIR;Ankara / Çankaya;Mehmet Demir;0505 222 33 44;Cam köşeleri koru
+URN-2002;Toplam koltuk 3+1;Mobilya;110;2.85;240;95;85;HAYIR;HAYIR;Ankara / Çankaya;Mehmet Demir;0505 222 33 44;Kılıf açık kalacak
+URN-2003;Aynalı gardırop 2 kapaklı;Mobilya;78;0.94;110;60;210;EVET;HAYIR;Ankara / Çankaya;Mehmet Demir;0505 222 33 44;Ayna kırılır - dik
+URN-2004;AVM sepet tipi raf;Mağaza ekipmanı;18;0.12;80;40;150;HAYIR;EVET;Ankara / Çankaya;Mehmet Demir;0505 222 33 44;
+URN-3001;LED televizyon 65 inç;Elektronik;21;0.18;150;15;92;EVET;HAYIR;İzmir / Bornova;Zeynep Kaya;0533 333 44 55;Ekran yüzeyi üstte kalacak
+URN-3002;TV sehpası ceviz;Mobilya;34;0.36;160;45;55;HAYIR;HAYIR;İzmir / Bornova;Zeynep Kaya;0533 333 44 55;
+URN-3003;Kitaplık 5 raflı;Mobilya;41;0.52;80;30;190;HAYIR;HAYIR;İzmir / Bornova;Zeynep Kaya;0533 333 44 55;Vida kiti 1. koli
+URN-3004;Koli - montaj malzemesi;Aksesuar;6;0.03;40;30;25;HAYIR;EVET;İzmir / Bornova;Zeynep Kaya;0533 333 44 55;El aleti var
+URN-3005;Koli - yedek parça seti;Aksesuar;12.5;0.05;45;35;30;HAYIR;EVET;İzmir / Bornova;Zeynep Kaya;0533 333 44 55;
+URN-9001;Ofis koltuğu (12 adet palet);Ofis;180;1.68;120;120;117;HAYIR;EVET;Depo / Merkez;İrsaliye: İR-4471;;Palet - transpalet gerekli

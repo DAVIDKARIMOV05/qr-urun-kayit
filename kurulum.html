@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<title>Kurulum ve kullanım kılavuzu</title>
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  details.k { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; background: var(--bg2); }
+  details.k > summary { font-weight: 700; cursor: pointer; }
+  details.k[open] > summary { margin-bottom: 8px; }
+  code, pre { background: #0a1020; border: 1px solid var(--line); border-radius: 8px; }
+  code { padding: 1px 6px; font-size: 13px; }
+  pre { padding: 10px; overflow-x: auto; font-size: 12.5px; white-space: pre-wrap; word-break: break-all; }
+  ol li, ul li { margin: 5px 0; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="logo">📘</div>
+  <div class="brand"><b>Kurulum kılavuzu</b><small>telefonda çalışma + QR formatı</small></div>
+  <div class="cap-mini"><a class="btn sm" href="index.html">📷 Uygulamaya dön</a></div>
+</header>
+
+<main>
+  <div class="card">
+    <h3>Bu uygulama ne yapıyor?</h3>
+    <p>Depoda/elinde bulunan her ürünün <b>QR kodunu telefon kamerasıyla okur</b> ve şu bilgileri ekrana getirir:</p>
+    <ul>
+      <li>Ağırlık (kg) ve hacim (m³)</li>
+      <li>En × Boy × Yükseklik (cm)</li>
+      <li><b>Kırılacak mı?</b> işareti ve “üstüne istiflenir mi?” bilgisi</li>
+      <li>Varış noktası, müşteri, telefon, özel not</li>
+    </ul>
+    <p>Uygulama iki ekrandan ibarettir: <b>Tarama</b> — QR’ı okutursun; ürün kayıtlıysa bilgileri ekrana gelir,
+      yeni bir kodsa formu doldurup kaydedersin. <b>Ürünler</b> — ürünleri elle ekle, ara, sil; yedek al / yükle.
+      İnternet gerekmez, veriler telefonun içinde kalır.</p>
+  </div>
+
+  <div class="card">
+    <h3>1) Telefonlarda çalıştırma (en önemli adım)</h3>
+    <p>Tarayıcılar kamera iznini yalnızca <b>HTTPS</b> (veya <code>localhost</code>) adreslerinde verir. Bu yüzden klasörü
+      bir bilgisayardan <code>http://192.168.x.x</code> adresiyle açarsanız kamera çalışmaz. Üç yol var:</p>
+
+    <details class="k" open>
+      <summary>Yöntem A — Ücretsiz internete verme (önerilen, 5 dakika)</summary>
+      <ol>
+        <li>Bu klasörü (tüm dosyalarla) <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a>
+          sayfasına sürükleyin <em>veya</em> GitHub hesabınızda bir repoya yükleyip <b>Settings → Pages</b> ile yayınlayın.</li>
+        <li>Size verilen <code>https://…</code> adresini ekibin telefonlarına gönderin.</li>
+        <li>Telefonda aç → Chrome menüsü → <b>“Ana ekrana ekle”</b>. Artık uygulama gibi, tam ekran çalışır ve çevrimdışı da açılır.</li>
+        <li>Güncelleme: dosyaları tekrar yükleyin, uygulama bir sonraki açılışta kendini yeniler.</li>
+      </ol>
+      <small>Google Play Store / App Store gerekmez. Sunucu, üyelik, veritabanı gerekmez; QR okuma tamamen telefonda yapılır.</small>
+    </details>
+
+    <details class="k">
+      <summary>Yöntem B — Mağazada kendi sunucun (HTTPS ile)</summary>
+      <p>Bilgisayarda Node.js kuruluysa:</p>
+      <pre>npx http-server . -p 8081 -S -C cert.pem -K key.pem</pre>
+      <p>Telefonla <code>https://bilgisayar-ip:8081</code> adresine girin (kendi kendine imzalı sertifikada
+        “yine de devam et” deyip sertifikayı güvenilir olarak kaydedin).</p>
+    </details>
+
+    <details class="k">
+      <summary>Yöntem C — Sadece deneme (kamera izni zorlaması)</summary>
+      <p>Aynı ağdaki telefondan <code>http://…:8080</code> ile açarsanız arayüz çalışır ama kamera kilitlidir.
+        Android Chrome’da geçici istisna: <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code>
+        adresine HTTP linkini yazıp tarayıcıyı yeniden başlatın. Üretim için önerilmez; iPhone’da çalışmaz.</p>
+    </details>
+  </div>
+
+  <div class="card">
+    <h3>2) Etiketler nereden gelecek?</h3>
+    <p>İki seçenek birlikte çalışır:</p>
+    <ul>
+      <li><b>Etiket üreticisi (etiket.html):</b> Ürünleri girin (QR yazdıkça kendiliğinden oluşur) veya Excel’den CSV ile içe aktarın,
+        “Etiketleri hazırla / yazdır” ile A4 etiket sayfası yazdırın. QR’ın içinde tüm bilgiler gömülüdür; internet olmadan da okunur.</li>
+      <li><b>Ana uygulamada QR:</b> Tarama → ürün bilgisi → <b>🔳 QR göster</b> (veya Ürünler → <i>Düzenle</i> → <b>🔳 QR</b>).
+        Etiketi unutan/bozan ürün için yerinde QR üretip PNG olarak indirirsiniz.</li>
+      <li><b>QR’da sadece ürün kodu varsa:</b> Telefon, ürünü daha önce gördüyse kendi kaydından tamamlar.
+        Bilgisayarda hazırladığınız kataloğu <i>Etiket üreticisi (etiket.html) → CSV içe aktar</i> ile yükleyebilirsiniz.</li>
+    </ul>
+    <p>ERP/macera/nakliye programınız zaten QR basıyorsa onun formatını da kullanabilirsiniz — aşağıdaki formatlara uyan her QR okunur.</p>
+  </div>
+
+  <div class="card">
+    <h3>2b) Bilgisayarda ürün hazırlayıp telefona aktarma</h3>
+    <p>Ürünleri PC başında topluca girmek için üç yol var (hepsi aynı listeyi doldurur, telefondaki
+      elle girilenlerle çakışmaz — kod aynıysa kayıtlar birleşir, telefon yeni kalansa dokunmaz):</p>
+    <ol>
+      <li><b>CSV/JSON içe aktar:</b> <i>etiket.html → 📥 CSV içe aktar</i> (şablon: 📄 CSV şablonu).
+        Excel’de doldur, içe aktar, etiketleri yazdır. QR’lar tüm bilgileri taşıdığı için telefon
+        listesi dolu olmasa bile okutulan üründen bilgileri gösterir.</li>
+      <li><b>urunler.json + PC’den çek (önerilen):</b> PC’de <i>etiket.html → ⬇️ urunler.json (PC→telefon)</i>
+        ile listeyi indirip <b>uygulamanın çalıştığı klasöre</b> <code>urunler.json</code> adıyla koyun.
+        Telefon (aynı Wi-Fi’de sunucuya bağlıysa) <i>Ürünler → 🔄 PC’den çek</i> ile listeyi tek dokunuşla
+        alır; PC listesi değiştiğinde tekrar çekmeniz yeterli. Dosya önbelleğe takılmaz, her çekmede tazesi gelir.
+        <br><small>Şablon örnek: <code>ornek-veri/urunler-ornek-senkron.json</code> — <code>{"urunler":[{kod, ad, kg, m3, en_cm, boy_cm, yukseklik_cm, kirilgan, istiflenebilir, varisNoktasi, musteri, telefon, not}]}</code></small></li>
+      <li><b>Yedek dosyasıyla:</b> PC’de listeyi hazırlayıp <i>⬆️ JSON dışa aktar</i>; dosyayı WhatsApp/e-posta/USB
+        ile telefona atıp <i>Ürünler → 📥 Yedekten yükle</i> ile açın (sunucusuz, internet gerektirmez).</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>3) QR kod içerik formatları</h3>
+    <p><b>a) JSON (en güvenli):</b></p>
+    <pre>{"v":1,"tur":"urun","kod":"URN-2001","ad":"Cam yemek masası","kategori":"Mobilya","kg":45,"m3":0.65,"en":120,"boy":80,"yukseklik":75,"kirilgan":1,"istifle":0,"varis":"Ankara / Çankaya","musteri":"Mehmet Demir","telefon":"0505 222 33 44","not":"Cam köşeleri koru"}</pre>
+    <p><b>b) Kısa satır (| ile ayrılmış):</b></p>
+    <pre>QRV1|URN-2001|Cam yemek masası|Mobilya|45|0.65|120|80|75|1|0|Ankara / Cankaya|Mehmet Demir|05052223344|Cam kopleri koru|1</pre>
+    <p><b>c) Bağlantı:</b> <code>https://firmam.com/urun/URN-2001?kg=45&amp;m3=0.65&amp;kirilgan=1&amp;varis=Ankara</code></p>
+    <p><b>d) Sadece kod:</b> <code>URN-2001</code> → ürün daha önce kaydedildiyse bilgileri listeden tamamlanır.</p>
+    <p class="muted">Alan eşleştirmesi esnektir: <code>agirlik/ağırlık/kg</code>, <code>hacim/m3</code>,
+      <code>en/genişlik</code>, <code>boy/uzunluk</code>, <code>yükseklik</code>, <code>kırılgan→kırılgan/kirilgan/EVET/1</code>,
+      <code>varış/varisNoktasi/hedef/şehir</code> gibi yazımlar tanınır. Ölçüler girilip hacim boş bırakılırsa
+      hacim otomatik hesaplanır (en×boy×yükseklik/1.000.000).</p>
+  </div>
+
+  <div class="card">
+    <h3>4) Günlük akış (ekip için)</h3>
+    <ol>
+      <li>Telefonla uygulamayı aç — <b>Tarama</b> ekranı.</li>
+      <li>Kamerayı başlat, ürünleri ardışık okut: <b>kayıtlı ürün → bilgileri anında açılır</b>; yeni kod → kayıt formu açılır, kaydedince ürün listeye girer.</li>
+      <li>Eksik/hatalı bilgi varsa form kaydetmez — hatayı alanın altında kırmızı görürsün; kırılacak ürünler ⚠ ile işaretlenir.</li>
+      <li><b>Ürünler</b> sekmesi: <i>＋ Ürün ekle</i> ile elle giriş, arama, <i>Sil</i>.</li>
+      <li>Başka telefona/PC’ye aktarmak için <i>Ürünler → Yedek al</i> (JSON); diğer cihaz <i>Yedekten yükle</i> ile açar.
+        Sıfırdan başlamak için <i>Tümünü sil</i> — ama önce mutlaka yedek al.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>5) Veri şablonu (hatalı giriş engellenir)</h3>
+    <p>Alanlar tek bir şablona göre denetlenir; kurala uymayan kayıt <b>kaydedilmez</b>, hatanın nerede olduğu
+      alanın altında kırmızı yazıyla gösterilir. Kuralların tek kaynağı <code>js/validate.js</code> dosyasıdır.</p>
+    <div class="scroll-x"><table class="tbl">
+      <tr><th>Alan</th><th>Kural</th></tr>
+      <tr><td>Ürün kodu *</td><td>3–30 karakter, büyük harf, boşluksuz; harf/rakam ile <code>- _ . /</code> ve Türkçe harf kabul edilir (otomatik büyütülür)</td></tr>
+      <tr><td>Ürün adı *</td><td>3–70 karakter, salt rakam olamaz; noktalı virgül gibi CSV’yi bozan işaretler temizlenir</td></tr>
+      <tr><td>Ağırlık (kg) *</td><td>0,05 – 5.000 (ör. <code>12,75</code> veya <code>1.240</code>)</td></tr>
+      <tr><td>Hacim (m³) *</td><td>0,0005 – 120 — boşsa ölçülerden hesaplanır; ölçü de yoksa kayıt edilmez</td></tr>
+      <tr><td>En / Boy / Yükseklik</td><td>1 – 600 cm; üçü birlikte girilir (ikisi dolu biri boşsa uyarı gelir)</td></tr>
+      <tr><td>Adet</td><td>1 – 999, tam sayı</td></tr>
+      <tr><td>Kırılacak mı? *</td><td>Kırılacak / kırılmaz seçilmeden kayıt yapılamaz</td></tr>
+      <tr><td>Varış noktası *</td><td><code>Şehir / İlçe</code> biçimine çevrilir (ör. <code>ankara cantay</code> → <code>Ankara / Çankaya</code>); “sadece listeden” açılırsa liste dışı yazılamaz</td></tr>
+      <tr><td>Telefon</td><td>0 ile başlayan 11 hane ve 2/3/4/5 ile devam eder; <b>12. hane yazılamaz</b>, harf/sembol kabul edilmez; <code>+90 532 111 22 33</code> → <code>0532 111 22 33</code> olarak yazılır</td></tr>
+      <tr><td>Müşteri / Not</td><td>Sırasıyla en fazla 50 / 120 karakter</td></tr>
+    </table></div>
+    <p><b>Uyarılar (kayıt engellenmez, turuncu yazılır):</b></p>
+    <ul>
+      <li><b>Yoğunluk:</b> kg ÷ m³ 8’in altındaysa (“kg ile m³ yer değiştirmiş”), 2.600’ün üstündeyse (“gram yazılmış”) uyarısı.</li>
+      <li><b>Hacim–ölçü tutarsızlığı:</b> girilen m³, en×boy×yükseklik hesabından %15 büyükse uyarı.</li>
+      <li><b>Kırılacak + istiflenir:</b> ikisi aynı anda işaretlenemez; kırılgan seçimi istiflemeyi otomatik kapatır.</li>
+    </ul>
+    <p><b>Taramada eksik bilgi gelirse:</b> tarama durur, form açılır, tamamlanınca tarama kendiliğinden devam eder.</p>
+    <p><b>Kendi koduna entegrasyon:</b> ürün kaydı düz bir JSON’dur:
+      <code>{kod, ad, kategori, kg, m3, en, boy, yukseklik, kirilgan, istifle, varis, musteri, telefon, not, adet, zaman}</code>.
+      Cihazda IndexedDB <code>qr-yukleme</code> veritabanının <code>items</code> store’unda tutulur;
+      <i>Ürünler → Yedek al</i> tüm veriyi tek JSON dosyası olarak verir, <i>Yedekten yükle</i> geri alır.</p>
+    <p><b>Excel ile CSV çalışırsan:</b> etiket üreticisinin CSV’si <b>noktalı virgül ayraçlı ve virgüllü ondalıklıdır</b>
+      (ör. <code>0,0017</code>) — Türkçe Excel çift tıkla açınca kg/m³/ölçü kolonları sayı görünür; nokta kullanılırsa
+      Excel sayıları tarih/metne çevirir (“Oca.83” gibi).</p>
+  </div>
+
+  <div class="card">
+    <h3>Sık yaşanan sorunlar</h3>
+    <dl class="kv">
+      <dt>Kamera açılmıyor</dt><dd>Adres HTTPS mi? (kilit simgesi) Chrome’da kamera izni “Engellendi” olmamalı; başka uygulama kamera kullanıyor olabilir.</dd>
+      <dt>QR okumuyor</dt><dd>El fenerini açın, kodu çerçeveye doldurun, ekranı kilitleyen kirli lensi silin. Olmazsa <b>Fotoğraftan</b> ile çekip okutun.</dd>
+      <dt>iPhone’da çalışmıyor mu?</dt><dd>Safari ile açıp <i>Paylaş → Ana Ekrana Ekle</i> yapın; iOS kamerayı yalnızca HTTPS + kurulu uygulama modunda sorunsuz verir.</dd>
+      <dt>Aynı ürünün QR’ını tekrar okuttum</dt><dd>Hiçbir şey olmaz: kayıtlı kod taranınca yalnızca <b>ürün bilgisi gösterilir</b>, kopya kayıt açılmaz. Elle eklerken aynı kodu yazarsan mevcut kaydın düzenleme formu açılır.</dd>
+      <dt>Excel’de sayılar “Oca.83” gibi bozuk/metin görünüyor</dt><dd>Eski sürüm CSV’de ondalık nokta kullanıyordu; Excel bunları tarih/metin sayıyordu. Yeni sürüm virgüllü yazar (0,0017) — dosyayı yeniden indir, kolonlar sayı olur.</dd>
+      <dt>Veriler kaybolur mu?</dt><dd>Telefon tarayıcı verilerini temizlemedikçe kalmaz; önemli bir değişiklik öncesi <i>Ürünler → Yedek al</i> alışkanlığı edinin.</dd>
+      <dt>El terminali / Bluetooth okuyucu</dt><dd>Okutma modu “klavye emülasyonu” ise cihazı bağlayın, Tarama ekranında okutun — kayıtlı ürünse bilgisi gelir, değilse kayıt formu açılır.</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h3>Gizlilik</h3>
+    <p>Uygulama statik dosyalardan oluşur: sunucu, veritabanı, üyelik, konum takibi ve reklam yoktur.
+      Kamera görüntüsü yalnızca QR çözmek için kullanılır, kaydedilmez ve telefonda kalmaz. Tüm kayıtlar
+      cihazın kendi veritabanındadır (IndexedDB).</p>
+  </div>
+</main>
+</body>
+</html>

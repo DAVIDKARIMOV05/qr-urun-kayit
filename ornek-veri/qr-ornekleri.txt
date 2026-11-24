@@ -1,0 +1,15 @@
+QR kodlarına yazılacak metin örnekleri (etiket.html otomatik üretir)
+-----------------------------------------------------------------
+{"v":1,"tur":"urun","kod":"URN-1001","ad":"Çamaşır makinesi 8 kg","kategori":"Beyaz eşya","kg":68,"m3":0.31,"en":60,"boy":60,"yukseklik":85,"varis":"İstanbul / Kadıköy","musteri":"Ayşe Yılmaz","telefon":"0532 111 22 33","not":"Tahliye hortumu arkada","kirilgan":0,"istifle":1}
+
+{"v":1,"tur":"urun","kod":"URN-1002","ad":"Bulaşık makinesi 12 program","kategori":"Beyaz eşya","kg":52,"m3":0.28,"en":60,"boy":60,"yukseklik":84,"varis":"İstanbul / Kadıköy","musteri":"Ayşe Yılmaz","telefon":"0532 111 22 33","kirilgan":0,"istifle":1}
+
+{"v":1,"tur":"urun","kod":"URN-1003","ad":"Buzdolabı no-frost 480 lt","kategori":"Beyaz eşya","kg":96,"m3":0.85,"en":70,"boy":74,"yukseklik":186,"varis":"İstanbul / Kadıköy","musteri":"Ayşe Yılmaz","telefon":"0532 111 22 33","not":"Dik taşınacak","kirilgan":0,"istifle":0}
+
+{"v":1,"tur":"urun","kod":"URN-1004","ad":"Çamaşır dolabı 3 kapaklı","kategori":"Mobilya","kg":92,"m3":1.24,"en":60,"boy":200,"yukseklik":92,"varis":"İstanbul / Kadıköy","musteri":"Ayşe Yılmaz","telefon":"0532 111 22 33","not":"2 koli demonte","kirilgan":0,"istifle":0}
+
+KISA SATIR BİÇİMİ (| ile ayrılmış):
+QRV1|kod|ad|kategori|kg|m3|en|boy|yukseklik|kirilgan|istifle|varis|musteri|telefon|not|adet
+QRV1|URN-2001|Cam yemek masası|Mobilya|45|0.65|120|80|75|1|0|Ankara / Cankaya|Mehmet Demir|05052223344|Cam kopleri koru|1
+
+Sadece ürün kodu da okutulabilir (orn: URN-2001) - telefon katalogdaki kaydi kullanir.

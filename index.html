@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="QR tabanlı ürün kayıt ve sorgulama: ürün ekle, sil, QR okutup bilgilerini gör. Veriler cihazda kalır.">
+<title>QR Ürün Kayıt</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="topbar no-print">
+  <div class="logo">📦</div>
+  <div class="brand">
+    <b>QR Ürün Kayıt</b>
+    <small>ekle · sil · QR ile sorgula</small>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 1) TARAMA ============ -->
+  <section class="view active" id="view-scan">
+    <div class="camera" id="camWrap">
+      <div class="stage">
+        <video id="cam" playsinline muted autoplay></video>
+        <div class="reticle" id="reticle"><i></i><i></i><i></i><i></i><div class="laser"></div></div>
+        <div class="cam-status"><span class="dot" id="camDot"></span><span id="camState">Kamera kapalı</span></div>
+        <div class="cam-hud">
+          <button class="icon-btn" id="btnTorch" type="button" title="El feneri" disabled>🔦</button>
+          <button class="icon-btn" id="btnFlip" type="button" title="Ön / arka kamera">🔄</button>
+          <button class="icon-btn" id="btnFs" type="button" title="Tam ekran">⛶</button>
+          <button class="icon-btn" id="btnCamToggle" type="button" title="Kamerayı durdur / başlat">⏻</button>
+        </div>
+        <div class="cam-msg" id="camMsg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row spread">
+        <div>
+          <b id="scanTitle">Kamerayı başlat</b>
+          <small id="scanHint" style="display:block">QR okuyucu: <span id="decoderName">hazırlanıyor…</span></small>
+        </div>
+      </div>
+      <div class="btn-grid mt12">
+        <button class="btn primary" id="btnStartCam" type="button">📷 Kamerayı başlat</button>
+        <button class="btn" id="btnManual" type="button">✍️ Elle gir</button>
+        <button class="btn" id="btnPhotoBtn" type="button">🖼️ Fotoğraftan</button>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
+      <small class="muted mt8" style="display:block">Kayıtlı bir ürünün QR’ını okutursan bilgileri aşağıda açılır; yeni bir kodsa kayıt formu açılır.</small>
+    </div>
+
+    <div id="urunBilgi"></div>
+  </section>
+
+  <!-- ============ 2) ÜRÜNLER ============ -->
+  <section class="view" id="view-urunler">
+    <div class="card tight">
+      <input type="search" id="q" placeholder="Ara: kod, ürün adı, müşteri, varış…">
+      <div class="row spread mt8">
+        <label class="switch" style="padding:0"><input type="checkbox" id="selTumu"><span style="font-size:13px">Tümünü seç</span></label>
+        <button class="btn sm danger" id="btnSelDel" type="button" disabled>🗑️ Seçilenleri sil</button>
+      </div>
+      <button class="btn primary block mt8" id="btnEkle" type="button">＋ Ürün ekle</button>
+    </div>
+    <div id="urunListe"></div>
+
+    <div class="card">
+      <h3>Veri <span class="hint">cihazda kalır · sunucu yok</span></h3>
+      <div class="btn-grid">
+        <button class="btn" id="btnBackup" type="button">⬇️ Yedek al</button>
+        <button class="btn" id="btnRestoreBtn" type="button">📥 Yedekten yükle</button>
+        <button class="btn" id="btnSync" type="button" title="Uygulamayı baratan bilgisayardaki urunler.json dosyasından ürünleri çek">🔄 PC'den çek</button>
+        <button class="btn danger" id="btnWipe" type="button">🧹 Tümünü sil</button>
+      </div>
+      <input type="file" id="restoreInput" accept=".json,application/json" class="hidden">
+      <div class="row gap mt12">
+        <a class="btn ghost grow" href="etiket.html">🏷️ QR etiket üret / yazdır</a>
+        <a class="btn ghost" href="kurulum.html">📘 Kılavuz</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabbar no-print">
+  <button class="active" data-view="scan" type="button"><span class="ic">📷</span>Tarama</button>
+  <button data-view="urunler" type="button"><span class="ic">📦</span>Ürünler<span class="badge-n hidden" id="tabBadge">0</span></button>
+</nav>
+
+<!-- ============ MODAL: ürün formu (parametreler) ============ -->
+<div class="modal" id="mItem">
+  <div class="veil" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="m-head">
+      <h2 id="mItemTitle">Ürün</h2>
+      <button class="icon-btn" type="button" data-close>✕</button>
+    </div>
+
+    <div class="grid2">
+      <label class="f"><span>Ürün kodu *</span><input type="text" id="fKod" autocomplete="off"></label>
+      <label class="f"><span>Kategori</span><select id="fKategori"></select></label>
+    </div>
+    <label class="f"><span>Ürün adı *</span><input type="text" id="fAd" autocomplete="off"></label>
+
+    <div class="grid2">
+      <label class="f"><span>Ağırlık (kg) *</span><input type="text" inputmode="decimal" id="fKg" placeholder="ör. 12,75"></label>
+      <label class="f"><span>Hacim (m³) *</span><input type="text" inputmode="decimal" id="fM3" placeholder="ör. 0,42"><small id="fM3Hint" class="muted">Ölçüleri girersen otomatik hesaplanır</small></label>
+    </div>
+    <div class="grid3">
+      <label class="f"><span>En (cm)</span><input type="text" inputmode="decimal" id="fEn"></label>
+      <label class="f"><span>Boy (cm)</span><input type="text" inputmode="decimal" id="fBoy"></label>
+      <label class="f"><span>Yükseklik (cm)</span><input type="text" inputmode="decimal" id="fYuk"></label>
+    </div>
+
+    <div class="row gap mb12">
+      <div class="grow"><span style="font-size:12.5px;color:var(--muted);font-weight:600">Kırılacak mı?</span>
+        <div class="tri mt8" id="fKirilgan">
+          <button type="button" data-v="1">EVET ⚠</button>
+          <button type="button" data-v="0">HAYIR</button>
+          <button type="button" data-v="">Bilinmiyor</button>
+        </div>
+      </div>
+      <div class="grow"><span style="font-size:12.5px;color:var(--muted);font-weight:600">Üstüne istiflenir mi?</span>
+        <div class="tri mt8" id="fIstifle">
+          <button type="button" data-v="1">EVET</button>
+          <button type="button" data-v="0">HAYIR</button>
+          <button type="button" data-v="">Bilinmiyor</button>
+        </div>
+      </div>
+    </div>
+
+    <label class="f"><span>Varış noktası *</span><input type="text" id="fVaris" list="catVaris" autocomplete="off" placeholder="İstanbul / Kadıköy"><small id="fVarisIpucu" class="muted">Biçim: Şehir / İlçe — örn. İstanbul / Kadıköy</small></label>
+    <datalist id="catVaris"></datalist>
+    <div class="grid2">
+      <label class="f"><span>Müşteri / alıcı</span><input type="text" id="fMusteri"></label>
+      <label class="f"><span>Telefon</span><input type="tel" id="fTelefon" inputmode="tel" maxlength="14" autocomplete="off" placeholder="0532 111 22 33"><small class="muted">0 + 10 hane — 12. hane yazılamaz, harf/sembol kabul edilmez</small></label>
+    </div>
+    <div class="grid2">
+      <label class="f"><span>Adet</span><input type="number" inputmode="numeric" step="1" min="1" max="999" id="fAdet" value="1"></label>
+      <label class="f"><span>Not</span><input type="text" id="fNot" placeholder="Asma, dik taşı, 2 kişi…"></label>
+    </div>
+
+    <details class="mt8">
+      <summary class="muted">Ham QR içeriği</summary>
+      <pre class="mono" id="fHam" style="white-space:pre-wrap;word-break:break-all;color:var(--muted)"></pre>
+    </details>
+
+    <div class="row gap mt16">
+      <button class="btn primary grow big" id="btnItemSave" type="button">💾 Kaydet</button>
+      <button class="btn" id="btnItemQr" type="button" title="Bu ürünün QR kodunu göster">🔳 QR</button>
+      <button class="btn danger" id="btnItemDelete" type="button">🗑️</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: QR kodu ============ -->
+<div class="modal" id="mQr">
+  <div class="veil" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="m-head"><h2>Ürün QR kodu</h2><button class="icon-btn" type="button" data-close>✕</button></div>
+    <p class="muted">Bu QR’ı yazdırıp ürüne yapıştırın; okutulduğunda ürünün kayıtlı bilgileri açılır.
+      Bilgileri değiştirip tekrar <b>🔳 QR</b>’a basarsanız kod yenilenir.</p>
+    <div class="qr-box" id="qrGorsel"></div>
+    <details class="mt8">
+      <summary class="muted">QR içeriği</summary>
+      <pre class="mono" id="qrMetin" style="white-space:pre-wrap;word-break:break-all;color:var(--muted)"></pre>
+    </details>
+    <div class="row gap mt12">
+      <button class="btn primary grow" id="btnQrPng" type="button">🖼️ PNG indir</button>
+      <button class="btn" id="btnQrKopya" type="button">📋 Metni kopyala</button>
+    </div>
+    <p class="muted mt12">Yüzlerce etiketi tek seferde yazdırmak için: <a href="etiket.html">Etiket üreticisi</a></p>
+  </div>
+</div>
+
+<!-- ============ MODAL: onay ============ -->
+<div class="modal" id="mConfirm">
+  <div class="veil" data-close></div>
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="m-head"><h2 id="cTitle">Emin misiniz?</h2><button class="icon-btn" type="button" data-close>✕</button></div>
+    <p class="muted" id="cText"></p>
+    <div class="row gap mt16">
+      <button class="btn grow" type="button" data-close>Vazgeç</button>
+      <button class="btn danger grow" id="cOk" type="button">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="vendor/jsQR.js"></script>
+<script src="vendor/qrcode-generator.js"></script>
+<script src="js/qrmake.js?v=13"></script>
+<script src="js/storage.js?v=13"></script>
+<script src="js/products.js?v=13"></script>
+<script src="js/validate.js?v=13"></script>
+<script src="js/scanner.js?v=13"></script>
+<script src="js/core.js?v=13"></script>
+<script src="js/items.js?v=13"></script>
+<script src="js/scan.js?v=13"></script>
+<script src="js/views.js?v=13"></script>
+<script>
+/* ---------- Self-heal (karışık sürüm bekçisi) ----------
+   Eski service worker önbelleği + yeni sayfa karışırsa (kritik eleman veya
+   JS bulunamazsa) SW kayıtlarını ve tüm önbellekleri silip BİR KEZ yeniler.
+   Sürüm, products.js src'sindeki ?v= parametresinden okunur. */
+(function () {
+  function versiyon() {
+    var s = document.querySelector('script[src*="products.js"]');
+    return s && s.src.indexOf('v=') > -1 ? s.src.split('v=')[1] : '0';
+  }
+  var kritik = ['btnManual', 'fKategori', 'fKod'];
+  var sorun = !window.Products || !window.App ||
+    kritik.some(function (id) { return !document.getElementById(id); });
+  if (!sorun) return;
+  var ana = 'selfheal-' + versiyon();
+  try { if (sessionStorage.getItem(ana)) return; sessionStorage.setItem(ana, '1'); } catch (e) {}
+  var bos = Promise.resolve();
+  if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+    bos = navigator.serviceWorker.getRegistrations().then(function (rs) {
+      return Promise.all(rs.map(function (r) { return r.unregister(); }));
+    }).catch(function () {});
+  }
+  bos.then(function () { return caches.keys(); })
+     .then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); })
+     .catch(function () {})
+     .then(function () { location.reload(); });
+})();
+</script>
+</body>
+</html>

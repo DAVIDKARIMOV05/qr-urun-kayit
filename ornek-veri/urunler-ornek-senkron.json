@@ -1,0 +1,10 @@
+{
+  "tur": "urunListesi",
+  "tarih": "2026-10-27T00:00:00.000Z",
+  "urunler": [
+    { "kod": "PC-9001", "ad": "Buzdolabı NoFrost 400L", "kategori": "Beyaz eşya", "kg": 85, "m3": 0.94, "en_cm": 70, "boy_cm": 70, "yukseklik_cm": 192, "kirilgan": "HAYIR", "istiflenebilir": "HAYIR", "varisNoktasi": "İstanbul / Kadıköy", "musteri": "Mehmet Demir", "telefon": "0532 111 22 33", "not": "Sağdan kapak, dar merdiven" },
+    { "kod": "PC-9002", "ad": "Cam Konsol", "kategori": "Mobilya", "kg": 42, "m3": 0.5, "en_cm": 120, "boy_cm": 40, "yukseklik_cm": 85, "kirilgan": "EVET", "varisNoktasi": "Ankara / Çankaya", "musteri": "Ayşe Yılmaz", "telefon": "0505 444 55 66" },
+    { "kod": "PC-9003", "ad": "Kitaplık MDF", "kategori": "Mobilya", "kg": 28, "m3": 0.28, "en_cm": 80, "boy_cm": 30, "yukseklik_cm": 180, "kirilgan": "HAYIR", "istiflenebilir": "EVET", "varisNoktasi": "İzmir / Konak" },
+    { "kod": "PC-9004", "ad": "Yeni Eklenen Çamaşır Makinesi", "kategori": "Beyaz eşya", "kg": 65, "m3": 0.35, "kirilgan": "HAYIR", "varisNoktasi": "Bursa / Nilüfer" }
+  ]
+}
